@@ -49,39 +49,20 @@ model VerificationToken {
 }
 
 model Url {
-  id             String    @id @default(cuid())
-  shortCode      String    @unique
-  originalUrl    String
-  title          String?
-  description    String?
-  clickCount     Int       @default(0)
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
-  expiresAt      DateTime?
-  lastAccessedAt DateTime?
-  isActive       Boolean   @default(true)
+  id          String    @id @default(cuid())
+  shortCode   String    @unique
+  originalUrl String
+  title       String?
+  description String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  expiresAt   DateTime?
+  isActive    Boolean   @default(true)
 
   userId String?
   user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
-
-  clicks Click[]
 
   @@index([shortCode])
   @@index([userId])
 }
 
-model Click {
-  id        String   @id @default(cuid())
-  urlId     String
-  ipAddress String?
-  userAgent String?
-  referer   String?
-  country   String?
-  city      String?
-  createdAt DateTime @default(now())
-
-  url Url @relation(fields: [urlId], references: [id], onDelete: Cascade)
-
-  @@index([urlId])
-  @@index([createdAt])
-}

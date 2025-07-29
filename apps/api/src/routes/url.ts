@@ -126,16 +126,6 @@ export const urlRouter = router({
       return { found: false, originalUrl: '' }
     }
 
-    // Update click count and last accessed
-    await prisma.url.update({
-      where: { id: url.id },
-      data: {
-        clickCount: { increment: 1 },
-        lastAccessedAt: new Date(),
-      },
-    })
-
-    // TODO: Log click analytics
 
     return {
       found: true,
@@ -153,9 +143,7 @@ export const urlRouter = router({
         shortCode: true,
         originalUrl: true,
         title: true,
-        clickCount: true,
         createdAt: true,
-        lastAccessedAt: true,
         isActive: true,
       },
     })
@@ -188,9 +176,7 @@ export const urlRouter = router({
             shortCode: true,
             originalUrl: true,
             title: true,
-            clickCount: true,
             createdAt: true,
-            lastAccessedAt: true,
           },
         }),
         prisma.url.count({ where: { userId } }),
