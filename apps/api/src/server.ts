@@ -6,7 +6,7 @@ import { appRouter } from './routes'
 import { createContext } from './lib/trpc'
 
 const app = express()
-const PORT = process.env.PORT || 4000
+const PORT = process.env.PORT
 
 // Security middleware
 app.use(helmet())
