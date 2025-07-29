@@ -26,14 +26,6 @@ model Account {
   @@unique([provider, providerAccountId])
 }
 
-model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique
-  userId       String
-  expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -45,7 +37,6 @@ model User {
   updatedAt     DateTime  @updatedAt
 
   accounts Account[]
-  sessions Session[]
   urls     Url[]
 }
 
