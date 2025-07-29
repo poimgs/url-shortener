@@ -45,7 +45,7 @@ variable "db_instance_class" {
   type        = map(string)
   default = {
     staging    = "db.t3.micro"
-    production = "db.t3.small"
+    production = "db.t3.micro"
   }
 }
 
@@ -54,7 +54,7 @@ variable "db_allocated_storage" {
   type        = map(number)
   default = {
     staging    = 20
-    production = 100
+    production = 20
   }
 }
 
@@ -63,7 +63,7 @@ variable "db_max_allocated_storage" {
   type        = map(number)
   default = {
     staging    = 50
-    production = 500
+    production = 50
   }
 }
 
@@ -72,7 +72,7 @@ variable "db_backup_retention" {
   type        = map(number)
   default = {
     staging    = 1
-    production = 7
+    production = 1
   }
 }
 
@@ -81,7 +81,7 @@ variable "app_runner_cpu" {
   type        = map(string)
   default = {
     staging    = "0.25 vCPU"
-    production = "1 vCPU"
+    production = "0.25 vCPU"
   }
 }
 
@@ -90,6 +90,6 @@ variable "app_runner_memory" {
   type        = map(string)
   default = {
     staging    = "0.5 GB"
-    production = "2 GB"
+    production = "0.5 GB"
   }
 }
