@@ -13,11 +13,6 @@ export const getUrlSchema = z.object({
   shortCode: z.string().min(1, 'Short code is required'),
 })
 
-export const getUserUrlsSchema = z.object({
-  page: z.number().min(1).default(1),
-  limit: z.number().min(1).max(100).default(10),
-})
-
 // Auth Schemas
 export const registerSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -33,6 +28,5 @@ export const signinSchema = z.object({
 // Type exports using z.infer
 export type CreateUrlRequest = z.infer<typeof createUrlSchema>
 export type GetUrlRequest = z.infer<typeof getUrlSchema>
-export type GetUserUrlsRequest = z.infer<typeof getUserUrlsSchema>
 export type RegisterRequest = z.infer<typeof registerSchema>
 export type SigninRequest = z.infer<typeof signinSchema>

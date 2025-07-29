@@ -1,10 +1,6 @@
 import { TRPCError } from '@trpc/server'
 import { prisma } from '@url-shortener/db'
-import {
-  createUrlSchema,
-  getUrlSchema,
-  getUserUrlsSchema,
-} from '@url-shortener/types'
+import { createUrlSchema, getUrlSchema } from '@url-shortener/types'
 import { router, publicProcedure, protectedProcedure } from '../lib/trpc'
 import { generateShortCode, isValidUrl, normalizeUrl } from '../lib/utils'
 
@@ -123,61 +119,4 @@ export const urlRouter = router({
       originalUrl: url.originalUrl,
     }
   }),
-
-  getStats: publicProcedure.input(getUrlSchema).query(async ({ input }) => {
-    const { shortCode } = input
-
-    const url = await prisma.url.findUnique({
-      where: { shortCode },
-      select: {
-        id: true,
-        shortCode: true,
-        originalUrl: true,
-        title: true,
-        createdAt: true,
-        isActive: true,
-      },
-    })
-
-    if (!url) {
-      throw new TRPCError({
-        code: 'NOT_FOUND',
-        message: 'URL not found',
-      })
-    }
-
-    return url
-  }),
-
-  getUserUrls: protectedProcedure
-    .input(getUserUrlsSchema)
-    .query(async ({ ctx, input }) => {
-      const { page, limit } = input
-      const skip = (page - 1) * limit
-      const userId = ctx.user.id
-
-      const [urls, total] = await Promise.all([
-        prisma.url.findMany({
-          where: { userId },
-          skip,
-          take: limit,
-          orderBy: { createdAt: 'desc' },
-          select: {
-            id: true,
-            shortCode: true,
-            originalUrl: true,
-            title: true,
-            createdAt: true,
-          },
-        }),
-        prisma.url.count({ where: { userId } }),
-      ])
-
-      return {
-        urls,
-        total,
-        page,
-        limit,
-      }
-    }),
 })

@@ -148,3 +148,31 @@ export async function createContext(opts?: CreateContextOptions) {
 - `apps/api/src/middleware/auth.ts` (new)
 - `apps/api/src/lib/trpc.ts` (simplify context and procedures)
 - `apps/api/src/server.ts` (add middleware integration)
+
+## URL Features
+
+### ⏰ URL Expiry Implementation
+
+**Priority: Medium**
+
+The codebase has partial URL expiry functionality that needs completion or removal.
+
+**Current State:**
+
+- Database schema includes `expiresAt DateTime?` field (`packages/db/prisma/schema.prisma:59`)
+- Expiry check exists in redirect logic (`apps/api/src/routes/url.ts:116-117`)
+- TypeScript types include `expiresAt?: Date` (`packages/types/index.ts:11`)
+- **Missing:** No way to set expiration when creating URLs (`apps/api/src/routes/url.ts:79-86`)
+
+**Options:**
+
+1. **Complete Implementation**
+   - Add expiry duration field to URL creation form/API
+   - Allow users to set custom expiration dates
+   - Add default expiry options (24h, 7d, 30d, never)
+
+2. **Remove Unused Functionality**
+   - Remove `expiresAt` from schema, types, and redirect logic
+   - Simplify codebase by removing unused expiry checks
+
+**Recommendation:** Complete implementation for better URL management features.
