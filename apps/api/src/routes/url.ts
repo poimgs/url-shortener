@@ -1,22 +1,8 @@
-import { z } from 'zod'
 import { TRPCError } from '@trpc/server'
 import { prisma } from '@url-shortener/db'
+import { createUrlSchema, getUrlSchema, getUserUrlsSchema } from '@url-shortener/types'
 import { router, publicProcedure, protectedProcedure } from '../lib/trpc'
 import { generateShortCode, isValidUrl, normalizeUrl } from '../lib/utils'
-
-const createUrlSchema = z.object({
-  originalUrl: z.string().min(1, 'URL is required'),
-  customSlug: z.string().optional(),
-})
-
-const getUrlSchema = z.object({
-  shortCode: z.string().min(1, 'Short code is required'),
-})
-
-const getUserUrlsSchema = z.object({
-  page: z.number().min(1).default(1),
-  limit: z.number().min(1).max(100).default(10),
-})
 
 export const urlRouter = router({
   create: protectedProcedure.input(createUrlSchema).mutation(async ({ ctx, input }) => {

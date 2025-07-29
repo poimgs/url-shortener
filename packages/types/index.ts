@@ -1,8 +1,7 @@
-export interface CreateUrlRequest {
-  originalUrl: string;
-  customSlug?: string;
-}
+// Re-export schemas for runtime validation
+export * from './schemas'
 
+// Response types (not validated with Zod, just TypeScript interfaces)
 export interface CreateUrlResponse {
   id: string;
   shortCode: string;
@@ -16,9 +15,9 @@ export interface UrlStatsResponse {
   id: string;
   shortCode: string;
   originalUrl: string;
-  clickCount: number;
+  title: string;
   createdAt: Date;
-  lastAccessedAt?: Date;
+  isActive: boolean;
 }
 
 export interface UserUrlsResponse {

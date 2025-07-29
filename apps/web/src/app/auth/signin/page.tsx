@@ -5,18 +5,13 @@ import { signIn, getSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Loader2 } from 'lucide-react'
+import { signinSchema, SigninRequest } from '@url-shortener/types'
 
-const signinSchema = z.object({
-  email: z.string().email('Invalid email'),
-  password: z.string().min(1, 'Password is required'),
-})
-
-type SigninData = z.infer<typeof signinSchema>
+type SigninData = SigninRequest
 
 export default function SignInPage() {
   const [isLoading, setIsLoading] = useState(false)

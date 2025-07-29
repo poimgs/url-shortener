@@ -2,12 +2,7 @@ import { NextResponse } from 'next/server'
 import bcrypt from 'bcryptjs'
 import { prisma } from '@url-shortener/db'
 import { z } from 'zod'
-
-const registerSchema = z.object({
-  name: z.string().min(1, 'Name is required'),
-  email: z.string().email('Invalid email'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
-})
+import { registerSchema } from '@url-shortener/types'
 
 export async function POST(request: Request) {
   try {

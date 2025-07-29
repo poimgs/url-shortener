@@ -4,19 +4,13 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Loader2 } from 'lucide-react'
+import { registerSchema, RegisterRequest } from '@url-shortener/types'
 
-const registerSchema = z.object({
-  name: z.string().min(1, 'Name is required'),
-  email: z.string().email('Invalid email'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
-})
-
-type RegisterData = z.infer<typeof registerSchema>
+type RegisterData = RegisterRequest
 
 export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false)

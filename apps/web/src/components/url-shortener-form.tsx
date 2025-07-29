@@ -3,27 +3,22 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
 import { Copy, ExternalLink, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { trpc } from '@/lib/trpc'
 import { copyToClipboard } from '@/lib/utils'
+import { createUrlSchema, CreateUrlRequest } from '@url-shortener/types'
 
-const formSchema = z.object({
-  originalUrl: z.string().min(1, 'URL is required').url('Please enter a valid URL'),
-  customSlug: z.string().optional(),
-})
-
-type FormData = z.infer<typeof formSchema>
+type FormData = CreateUrlRequest
 
 export function UrlShortenerForm() {
   const [shortenedUrl, setShortenedUrl] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
 
   const form = useForm<FormData>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(createUrlSchema),
     defaultValues: {
       originalUrl: '',
       customSlug: '',
