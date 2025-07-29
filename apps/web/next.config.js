@@ -6,8 +6,8 @@ const nextConfig = {
   async redirects() {
     return [
       {
-        source: '/api/:path*',
-        destination: `${process.env.API_URL}/:path*`,
+        source: '/api/trpc/:path*',
+        destination: `${process.env.API_URL || 'http://localhost:4000'}/trpc/:path*`,
         permanent: false,
       },
     ]

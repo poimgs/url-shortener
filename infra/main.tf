@@ -244,7 +244,7 @@ resource "aws_amplify_app" "web" {
   build_spec = file("${path.module}/amplify.yml")
 
   environment_variables = {
-    NEXT_PUBLIC_API_URL = aws_apprunner_service.api.service_url
+    API_URL = aws_apprunner_service.api.service_url
     NODE_ENV           = "production"
   }
 
@@ -262,7 +262,7 @@ resource "aws_amplify_branch" "main" {
   branch_name = local.environment == "production" ? "main" : "develop"
 
   environment_variables = {
-    NEXT_PUBLIC_API_URL = aws_apprunner_service.api.service_url
+    API_URL = aws_apprunner_service.api.service_url
   }
 }
 

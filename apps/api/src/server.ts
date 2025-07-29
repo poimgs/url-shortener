@@ -3,6 +3,7 @@ import cors from 'cors'
 import helmet from 'helmet'
 import { createExpressMiddleware } from '@trpc/server/adapters/express'
 import { appRouter } from './routes'
+import { createContext } from './lib/trpc'
 
 const app = express()
 const PORT = process.env.PORT || 4000
@@ -28,14 +29,14 @@ app.use(
   '/trpc',
   createExpressMiddleware({
     router: appRouter,
-    createContext: () => ({}),
+    createContext: ({ req }) => createContext({ req }),
   })
 )
 
 // Redirect endpoint for short URLs
 app.get('/:shortCode', async (req, res) => {
   try {
-    const caller = appRouter.createCaller({})
+    const caller = appRouter.createCaller(await createContext())
     const result = await caller.url.redirect({
       shortCode: req.params.shortCode,
     })

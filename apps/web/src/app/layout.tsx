@@ -1,6 +1,6 @@
 import './globals.css'
 import { Inter } from 'next/font/google'
-import { TRPCProvider } from '@/components/providers'
+import { Providers } from '@/components/providers'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -17,13 +17,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <TRPCProvider>
+        <Providers>
           <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
             <main className="container mx-auto px-4 py-8">
               {children}
             </main>
           </div>
-        </TRPCProvider>
+        </Providers>
       </body>
     </html>
   )

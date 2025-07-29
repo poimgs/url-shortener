@@ -1,7 +1,7 @@
 import { z } from 'zod'
 import { TRPCError } from '@trpc/server'
 import { prisma } from '@url-shortener/db'
-import { router, publicProcedure } from '../lib/trpc'
+import { router, publicProcedure, protectedProcedure } from '../lib/trpc'
 import { generateShortCode, isValidUrl, normalizeUrl } from '../lib/utils'
 
 const createUrlSchema = z.object({
@@ -19,8 +19,9 @@ const getUserUrlsSchema = z.object({
 })
 
 export const urlRouter = router({
-  create: publicProcedure.input(createUrlSchema).mutation(async ({ input }) => {
+  create: protectedProcedure.input(createUrlSchema).mutation(async ({ ctx, input }) => {
     const { originalUrl, customSlug } = input
+    const userId = ctx.user.id
 
     const normalizedUrl = normalizeUrl(originalUrl)
     if (!isValidUrl(normalizedUrl)) {
@@ -88,6 +89,7 @@ export const urlRouter = router({
           shortCode,
           originalUrl: normalizedUrl,
           title,
+          userId,
         },
       })
 
@@ -168,15 +170,16 @@ export const urlRouter = router({
     return url
   }),
 
-  getUserUrls: publicProcedure
+  getUserUrls: protectedProcedure
     .input(getUserUrlsSchema)
-    .query(async ({ input }) => {
+    .query(async ({ ctx, input }) => {
       const { page, limit } = input
       const skip = (page - 1) * limit
+      const userId = ctx.user.id
 
-      // TODO: Add user authentication and filter by userId
       const [urls, total] = await Promise.all([
         prisma.url.findMany({
+          where: { userId },
           skip,
           take: limit,
           orderBy: { createdAt: 'desc' },
@@ -190,7 +193,7 @@ export const urlRouter = router({
             lastAccessedAt: true,
           },
         }),
-        prisma.url.count(),
+        prisma.url.count({ where: { userId } }),
       ])
 
       return {
