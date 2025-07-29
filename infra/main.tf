@@ -203,7 +203,7 @@ resource "aws_apprunner_service" "api" {
         runtime_environment_variables = {
           NODE_ENV     = "production"
           DATABASE_URL = "postgresql://${aws_db_instance.main.username}:${var.db_password}@${aws_db_instance.main.endpoint}/${aws_db_instance.main.db_name}"
-          BASE_URL     = local.environment == "production" ? "https://${var.production_domain}" : "https://${var.staging_domain}"
+          FRONTEND_URL = local.environment == "production" ? "https://${var.production_domain}" : "https://${var.staging_domain}"
         }
       }
       image_identifier                = "${aws_ecr_repository.api.repository_url}:latest"
