@@ -95,7 +95,7 @@ export const urlRouter = router({
         id: url.id,
         shortCode: url.shortCode,
         originalUrl: url.originalUrl,
-        shortUrl: `${process.env.FRONTEND_URL}/${url.shortCode}`,
+        shortUrl: `${process.env.API_URL || 'http://localhost:4000'}/${url.shortCode}`,
         createdAt: url.createdAt,
         expiresAt: url.expiresAt,
       }
