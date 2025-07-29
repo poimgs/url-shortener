@@ -74,3 +74,60 @@ The GitHub workflows are currently commented out and require setup before they c
 **Files:**
 - `.github/workflows/ci.yml` - CI pipeline (tests, lint, security scan)
 - `.github/workflows/deploy.yml` - Deployment pipeline (build, push, deploy)
+
+## Code Architecture & Refactoring
+
+### 🏗️ Refactor tRPC Authentication Architecture
+**Priority: Medium**
+
+The current tRPC implementation handles too many concerns, making it complex and tightly coupled. Authentication logic should be separated from the tRPC framework.
+
+**Current Issues:**
+- tRPC context performing heavy operations (DB queries, user validation)
+- Authentication tightly coupled to tRPC framework
+- Mixed concerns in single context creation function
+- `protectedProcedure` doing redundant work
+
+**Current Implementation:**
+```typescript
+// apps/api/src/lib/trpc.ts:9-43
+export async function createContext(opts?: CreateContextOptions) {
+  // Does DB lookup and user validation
+  const userId = req?.headers?.['x-user-id']
+  const user = await prisma.user.findUnique({ where: { id: userId } })
+  return { session: { user }, user }
+}
+```
+
+**Proposed Refactoring: Express Middleware Pattern**
+
+1. **Create Authentication Middleware**
+   - New file: `apps/api/src/middleware/auth.ts`
+   - Extract user validation logic from tRPC context
+   - Express middleware validates `x-user-id` and sets `req.user`
+   - Handle auth errors at Express level before reaching tRPC
+
+2. **Simplify tRPC Context**
+   - Remove DB queries from `createContext`
+   - Access `req.user` set by middleware
+   - Lightweight context creation focused on request data
+
+3. **Update Server Integration**
+   - Add auth middleware to Express app before tRPC
+   - Apply to both `/trpc` routes and direct `/:shortCode` endpoint
+
+4. **Simplify Procedures**
+   - `protectedProcedure` only checks `ctx.user` existence
+   - Remove redundant context operations
+
+**Benefits:**
+- **Separation of concerns:** Auth logic separate from tRPC
+- **Reusability:** Auth middleware works for non-tRPC routes  
+- **Performance:** Single auth check per request vs per procedure
+- **Maintainability:** Clear auth flow, easier testing
+- **Consistency:** Same auth logic for all endpoints
+
+**Files to Modify:**
+- `apps/api/src/middleware/auth.ts` (new)
+- `apps/api/src/lib/trpc.ts` (simplify context and procedures)
+- `apps/api/src/server.ts` (add middleware integration)
