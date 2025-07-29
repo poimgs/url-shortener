@@ -9,19 +9,19 @@ output "app_runner_service_url" {
   value       = aws_apprunner_service.api.service_url
 }
 
-output "amplify_app_id" {
-  description = "Amplify app ID"
-  value       = aws_amplify_app.web.id
-}
-
-output "amplify_default_domain" {
-  description = "Amplify default domain"
-  value       = aws_amplify_app.web.default_domain
+output "web_service_url" {
+  description = "Frontend App Runner service URL"
+  value       = aws_apprunner_service.web.service_url
 }
 
 output "ecr_repository_url" {
-  description = "ECR repository URL"
+  description = "API ECR repository URL"
   value       = aws_ecr_repository.api.repository_url
+}
+
+output "web_ecr_repository_url" {
+  description = "Web ECR repository URL"
+  value       = aws_ecr_repository.web.repository_url
 }
 
 output "vpc_id" {

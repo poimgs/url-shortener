@@ -171,9 +171,20 @@ resource "aws_db_instance" "main" {
   })
 }
 
-# ECR Repository
+# ECR Repositories
 resource "aws_ecr_repository" "api" {
   name                 = "${local.name_prefix}-api"
+  image_tag_mutability = "MUTABLE"
+
+  image_scanning_configuration {
+    scan_on_push = true
+  }
+
+  tags = local.common_tags
+}
+
+resource "aws_ecr_repository" "web" {
+  name                 = "${local.name_prefix}-web"
   image_tag_mutability = "MUTABLE"
 
   image_scanning_configuration {
@@ -203,7 +214,7 @@ resource "aws_apprunner_service" "api" {
         runtime_environment_variables = {
           NODE_ENV     = "production"
           DATABASE_URL = "postgresql://${aws_db_instance.main.username}:${var.db_password}@${aws_db_instance.main.endpoint}/${aws_db_instance.main.db_name}"
-          FRONTEND_URL = local.environment == "production" ? "https://${var.production_domain}" : "https://${var.staging_domain}"
+          FRONTEND_URL = aws_apprunner_service.web.service_url
         }
       }
       image_identifier                = "${aws_ecr_repository.api.repository_url}:latest"
@@ -236,44 +247,39 @@ resource "aws_apprunner_service" "api" {
   tags = local.common_tags
 }
 
-# Amplify App for Frontend
-resource "aws_amplify_app" "web" {
-  name       = "${local.name_prefix}-web"
-  repository = var.github_repository
+# App Runner Service for Frontend
+resource "aws_apprunner_service" "web" {
+  service_name = "${local.name_prefix}-web"
 
-  build_spec = file("${path.module}/amplify.yml")
-
-  environment_variables = {
-    API_URL = aws_apprunner_service.api.service_url
-    NODE_ENV           = "production"
+  source_configuration {
+    image_repository {
+      image_configuration {
+        port = "3000"
+        runtime_environment_variables = {
+          NODE_ENV = "production"
+          API_URL  = aws_apprunner_service.api.service_url
+        }
+      }
+      image_identifier      = "${aws_ecr_repository.web.repository_url}:latest"
+      image_repository_type = "ECR"
+    }
+    auto_deployments_enabled = false
   }
 
-  custom_rule {
-    source = "/<*>"
-    status = "404-200"
-    target = "/index.html"
+  instance_configuration {
+    cpu    = var.app_runner_cpu[local.environment]
+    memory = var.app_runner_memory[local.environment]
+  }
+
+  health_check_configuration {
+    healthy_threshold   = 1
+    interval            = 10
+    path                = "/"
+    protocol            = "HTTP"
+    timeout             = 5
+    unhealthy_threshold = 5
   }
 
   tags = local.common_tags
 }
 
-resource "aws_amplify_branch" "main" {
-  app_id      = aws_amplify_app.web.id
-  branch_name = local.environment == "production" ? "main" : "develop"
-
-  environment_variables = {
-    API_URL = aws_apprunner_service.api.service_url
-  }
-}
-
-resource "aws_amplify_domain_association" "main" {
-  count = local.environment == "production" ? 1 : 0
-
-  app_id      = aws_amplify_app.web.id
-  domain_name = var.production_domain
-
-  sub_domain {
-    branch_name = aws_amplify_branch.main.branch_name
-    prefix      = ""
-  }
-}

@@ -46,11 +46,14 @@
 #       - name: Build API
 #         run: npm run build --workspace=apps/api
 
+#       - name: Build Web
+#         run: npm run build --workspace=apps/web
+
 #       - name: Login to Amazon ECR
 #         id: login-ecr
 #         uses: aws-actions/amazon-ecr-login@v2
 
-#       - name: Build and push Docker image
+#       - name: Build and push API Docker image
 #         env:
 #           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
 #           ECR_REPOSITORY: url-shortener-${{ steps.env.outputs.environment }}-api
@@ -58,6 +61,20 @@
 #         run: |
 #           # Build Docker image
 #           docker build -f apps/api/Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+#           docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
+
+#           # Push to ECR
+#           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+#           docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+
+#       - name: Build and push Web Docker image
+#         env:
+#           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+#           ECR_REPOSITORY: url-shortener-${{ steps.env.outputs.environment }}-web
+#           IMAGE_TAG: ${{ github.sha }}
+#         run: |
+#           # Build Docker image
+#           docker build -f apps/web/Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
 #           docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
 
 #           # Push to ECR
@@ -92,12 +109,14 @@
 #           TF_VAR_github_repository: ${{ github.repository }}
 #         run: terraform apply -auto-approve -no-color
 
-#       - name: Get App Runner Service URL
+#       - name: Get App Runner Service URLs
 #         id: app-runner
 #         working-directory: infra
 #         run: |
-#           SERVICE_URL=$(terraform output -raw app_runner_service_url)
-#           echo "service_url=$SERVICE_URL" >> $GITHUB_OUTPUT
+#           API_SERVICE_URL=$(terraform output -raw app_runner_service_url)
+#           WEB_SERVICE_URL=$(terraform output -raw web_service_url)
+#           echo "api_service_url=$API_SERVICE_URL" >> $GITHUB_OUTPUT
+#           echo "web_service_url=$WEB_SERVICE_URL" >> $GITHUB_OUTPUT
 
 #       - name: Run Database Migrations
 #         env:
@@ -105,19 +124,9 @@
 #         run: |
 #           npm run db:migrate --workspace=packages/db
 
-#       - name: Deploy Frontend to Amplify
-#         env:
-#           AMPLIFY_APP_ID: ${{ secrets.AMPLIFY_APP_ID }}
-#           BRANCH_NAME: ${{ steps.env.outputs.environment == 'production' && 'main' || 'develop' }}
-#         run: |
-#           aws amplify start-job \
-#             --app-id $AMPLIFY_APP_ID \
-#             --branch-name $BRANCH_NAME \
-#             --job-type RELEASE
-
 #       - name: Deployment Summary
 #         run: |
 #           echo "🚀 Deployment completed successfully!"
 #           echo "Environment: ${{ steps.env.outputs.environment }}"
-#           echo "API URL: ${{ steps.app-runner.outputs.service_url }}"
-#           echo "Frontend: Check Amplify console for deployment status"
+#           echo "API URL: ${{ steps.app-runner.outputs.api_service_url }}"
+#           echo "Frontend URL: ${{ steps.app-runner.outputs.web_service_url }}"

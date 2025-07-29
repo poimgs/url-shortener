@@ -27,18 +27,6 @@ variable "github_repository" {
   type        = string
 }
 
-variable "production_domain" {
-  description = "Production domain name"
-  type        = string
-  default     = "urlshort.example.com"
-}
-
-variable "staging_domain" {
-  description = "Staging domain name"
-  type        = string
-  default     = "staging.urlshort.example.com"
-}
-
 # Environment-specific variables
 variable "db_instance_class" {
   description = "RDS instance class by environment"
