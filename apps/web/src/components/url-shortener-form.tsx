@@ -6,7 +6,13 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Copy, ExternalLink, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import { trpc } from '@/lib/trpc'
 import { copyToClipboard } from '@/lib/utils'
 import { createUrlSchema, CreateUrlRequest } from '@url-shortener/types'
@@ -26,11 +32,11 @@ export function UrlShortenerForm() {
   })
 
   const createUrl = trpc.url.create.useMutation({
-    onSuccess: (data) => {
+    onSuccess: data => {
       setShortenedUrl(data.shortUrl)
       form.reset()
     },
-    onError: (error) => {
+    onError: error => {
       console.error('Error creating short URL:', error)
     },
   })
@@ -59,9 +65,7 @@ export function UrlShortenerForm() {
       <Card>
         <CardHeader>
           <CardTitle>URL Shortener</CardTitle>
-          <CardDescription>
-            Create short links for easy sharing
-          </CardDescription>
+          <CardDescription>Create short links for easy sharing</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -77,7 +81,7 @@ export function UrlShortenerForm() {
                 </p>
               )}
             </div>
-            
+
             <div className="space-y-2">
               <Input
                 {...form.register('customSlug')}
@@ -107,9 +111,7 @@ export function UrlShortenerForm() {
             </Button>
 
             {createUrl.error && (
-              <p className="text-sm text-red-500">
-                {createUrl.error.message}
-              </p>
+              <p className="text-sm text-red-500">{createUrl.error.message}</p>
             )}
           </form>
         </CardContent>
@@ -123,16 +125,8 @@ export function UrlShortenerForm() {
           </CardHeader>
           <CardContent>
             <div className="flex items-center space-x-2">
-              <Input
-                value={shortenedUrl}
-                readOnly
-                className="flex-1"
-              />
-              <Button
-                onClick={handleCopy}
-                variant="outline"
-                size="icon"
-              >
+              <Input value={shortenedUrl} readOnly className="flex-1" />
+              <Button onClick={handleCopy} variant="outline" size="icon">
                 <Copy className="h-4 w-4" />
               </Button>
               <Button

@@ -11,6 +11,8 @@
     "lint": "npm run lint --workspaces",
     "type-check": "npm run type-check --workspaces",
     "test": "npm run test --workspaces",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "db:generate": "npx prisma generate --schema=packages/db/prisma/schema.prisma",
     "db:push": "npx prisma db push --schema=packages/db/prisma/schema.prisma",
     "db:migrate": "npx prisma migrate dev --schema=packages/db/prisma/schema.prisma",
@@ -36,5 +38,13 @@
   },
   "dependencies": {
     "@prisma/client": "^5.22.0"
+  },
+  "prettier": {
+    "semi": false,
+    "singleQuote": true,
+    "tabWidth": 2,
+    "trailingComma": "es5",
+    "printWidth": 80,
+    "arrowParens": "avoid"
   }
 }

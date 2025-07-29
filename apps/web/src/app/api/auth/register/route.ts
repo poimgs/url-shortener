@@ -11,7 +11,7 @@ export async function POST(request: Request) {
 
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({
-      where: { email }
+      where: { email },
     })
 
     if (existingUser) {
@@ -36,12 +36,12 @@ export async function POST(request: Request) {
         name: true,
         email: true,
         createdAt: true,
-      }
+      },
     })
 
     return NextResponse.json({
       message: 'User created successfully',
-      user
+      user,
     })
   } catch (error) {
     if (error instanceof z.ZodError) {

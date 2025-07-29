@@ -2,7 +2,10 @@ import { z } from 'zod'
 
 // URL Shortener Schemas
 export const createUrlSchema = z.object({
-  originalUrl: z.string().min(1, 'URL is required').url('Please enter a valid URL'),
+  originalUrl: z
+    .string()
+    .min(1, 'URL is required')
+    .url('Please enter a valid URL'),
   customSlug: z.string().optional(),
 })
 

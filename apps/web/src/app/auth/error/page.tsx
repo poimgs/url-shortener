@@ -1,7 +1,13 @@
 'use client'
 
 import { useSearchParams } from 'next/navigation'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { useRouter } from 'next/navigation'
 
@@ -28,9 +34,7 @@ export default function AuthErrorPage() {
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle className="text-red-600">Authentication Error</CardTitle>
-          <CardDescription>
-            {getErrorMessage(error)}
-          </CardDescription>
+          <CardDescription>{getErrorMessage(error)}</CardDescription>
         </CardHeader>
         <CardContent>
           <Button

@@ -8,10 +8,10 @@ interface CreateContextOptions {
 
 export async function createContext(opts?: CreateContextOptions) {
   const req = opts?.req
-  
+
   // Extract user ID from headers sent by the web app
   const userId = req?.headers?.['x-user-id']
-  
+
   if (userId) {
     try {
       // Validate that the user exists in the database
@@ -22,9 +22,9 @@ export async function createContext(opts?: CreateContextOptions) {
           email: true,
           name: true,
           image: true,
-        }
+        },
       })
-      
+
       if (user) {
         return {
           session: { user },
@@ -35,7 +35,7 @@ export async function createContext(opts?: CreateContextOptions) {
       console.error('Error validating user:', error)
     }
   }
-  
+
   return {
     session: null,
     user: null,
@@ -60,13 +60,13 @@ export const t = initTRPC.context<Context>().create({
 export const router = t.router
 export const publicProcedure = t.procedure
 
-export const protectedProcedure = t.procedure.use(async (opts) => {
+export const protectedProcedure = t.procedure.use(async opts => {
   const { ctx } = opts
-  
+
   if (!ctx.session || !ctx.user) {
     throw new TRPCError({ code: 'UNAUTHORIZED' })
   }
-  
+
   return opts.next({
     ctx: {
       ...ctx,

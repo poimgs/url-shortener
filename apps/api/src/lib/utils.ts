@@ -1,6 +1,7 @@
 import { customAlphabet } from 'nanoid'
 
-const alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
+const alphabet =
+  '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
 export const generateShortCode = customAlphabet(alphabet, 6)
 
 export function isValidUrl(string: string): boolean {

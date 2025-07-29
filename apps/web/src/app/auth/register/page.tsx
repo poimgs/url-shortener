@@ -6,7 +6,13 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import { Loader2 } from 'lucide-react'
 import { registerSchema, RegisterRequest } from '@url-shortener/types'
 
@@ -62,7 +68,9 @@ export default function RegisterPage() {
       <div className="flex items-center justify-center min-h-[80vh]">
         <Card className="w-full max-w-md">
           <CardHeader>
-            <CardTitle className="text-green-600">Registration Successful!</CardTitle>
+            <CardTitle className="text-green-600">
+              Registration Successful!
+            </CardTitle>
             <CardDescription>
               Your account has been created. Redirecting to sign in...
             </CardDescription>
@@ -124,15 +132,9 @@ export default function RegisterPage() {
               )}
             </div>
 
-            {error && (
-              <p className="text-sm text-red-500">{error}</p>
-            )}
+            {error && <p className="text-sm text-red-500">{error}</p>}
 
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={isLoading}
-            >
+            <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />

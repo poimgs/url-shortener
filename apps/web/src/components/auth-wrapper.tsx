@@ -26,19 +26,12 @@ export function AuthWrapper({ children }: { children: React.ReactNode }) {
                 <span className="text-sm text-gray-600">
                   Welcome, {session.user?.name || session.user?.email}
                 </span>
-                <Button
-                  onClick={() => signOut()}
-                  variant="outline"
-                  size="sm"
-                >
+                <Button onClick={() => signOut()} variant="outline" size="sm">
                   Sign Out
                 </Button>
               </>
             ) : (
-              <Button
-                onClick={() => signIn()}
-                size="sm"
-              >
+              <Button onClick={() => signIn()} size="sm">
                 Sign In
               </Button>
             )}
