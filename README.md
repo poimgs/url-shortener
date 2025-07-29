@@ -108,33 +108,65 @@ The application supports automatic deployment to AWS with two environments:
 
 ### Infrastructure
 
-- **Database**: Amazon RDS (PostgreSQL)
-- **Backend**: AWS App Runner (containerized)
-- **Frontend**: AWS Amplify Hosting
-- **Images**: Amazon ECR
+- **Database**: Amazon RDS (PostgreSQL) in private subnets
+- **Backend API**: AWS App Runner (containerized)
+- **Frontend**: AWS App Runner (containerized)
+- **Container Images**: Amazon ECR repositories
+- **Networking**: VPC with public/private subnets across 2 availability zones
+- **Security**: Security groups for database and application access
 
 ### CI/CD Pipeline
 
 1. **Pull Request**: Runs tests, linting, and security scans
 2. **Push to develop/main**:
-   - Builds and pushes Docker image to ECR
+   - Builds and pushes Docker images to ECR (API and Web)
    - Deploys infrastructure with Terraform
    - Runs database migrations
-   - Deploys frontend to Amplify
+   - Updates App Runner services with new images
 
 ### Setup Deployment
 
+#### Prerequisites
+
+1. **AWS Account Setup**
+   - Create an AWS account or use an existing one
+   - Create an IAM user with programmatic access
+   - Attach the following AWS managed policies to the user:
+     - `AmazonEC2ContainerRegistryFullAccess`
+     - `AWSAppRunnerFullAccess` 
+     - `AmazonRDSFullAccess`
+     - `AmazonVPCFullAccess`
+     - `IAMFullAccess`
+   - Generate Access Key ID and Secret Access Key
+
+2. **Optional: Terraform Remote State**
+   - Create S3 bucket for Terraform state storage
+   - Create DynamoDB table for state locking
+   - Update `infra/main.tf` to configure remote backend
+
+#### GitHub Configuration
+
 1. **Configure GitHub Secrets**
+   
+   Navigate to Repository Settings → Secrets and variables → Actions:
 
+   **Required Secrets:**
    ```
-   AWS_ACCESS_KEY_ID
-   AWS_SECRET_ACCESS_KEY
-   DB_PASSWORD
-   DATABASE_URL
-   AMPLIFY_APP_ID
+   AWS_ACCESS_KEY_ID          # Your AWS access key
+   AWS_SECRET_ACCESS_KEY      # Your AWS secret key
+   DB_PASSWORD               # Strong password for PostgreSQL
    ```
 
-2. **Initialize Terraform**
+   **Optional Variables:**
+   ```
+   AWS_REGION                # Default: us-east-1
+   ```
+
+   **Note:** `DATABASE_URL` will be updated after first deployment with actual RDS endpoint.
+
+2. **Initialize Terraform Workspaces**
+
+   Run these commands locally before first deployment:
 
    ```bash
    cd infra
@@ -143,9 +175,27 @@ The application supports automatic deployment to AWS with two environments:
    terraform workspace new production
    ```
 
-3. **Deploy**
-   - Push to `develop` for staging
-   - Push to `main` for production
+#### Deployment Process
+
+1. **Branch Setup**
+   - `develop` branch → Staging environment  
+   - `main` branch → Production environment
+
+2. **Deploy**
+   - Push to `develop` for staging deployment
+   - After testing staging, push to `main` for production
+
+#### Post-Deployment Steps
+
+After your first successful deployment:
+
+1. **Update DATABASE_URL Secret**
+   - Get the RDS endpoint from Terraform outputs
+   - Update the `DATABASE_URL` GitHub secret with the actual connection string
+   
+2. **Access Your Applications**
+   - API and Web service URLs will be displayed in the GitHub Actions log
+   - Services are accessible via the App Runner URLs provided
 
 ## 🔧 Configuration
 
