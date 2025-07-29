@@ -4,7 +4,6 @@ import type { AppRouter } from '../../../api/src/routes'
 
 function getBaseUrl() {
   if (typeof window !== 'undefined') return ''
-  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`
   return process.env.API_URL || 'http://localhost:4000'
 }
 
