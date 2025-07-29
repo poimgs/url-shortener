@@ -9,7 +9,7 @@ This project uses a monorepo structure with npm workspaces:
 - **Frontend**: Next.js 13 (App Router) with React, TypeScript, Tailwind CSS
 - **Backend**: Express.js with tRPC for type-safe APIs
 - **Database**: PostgreSQL with Prisma ORM
-- **Authentication**: NextAuth.js with OAuth providers
+- **Authentication**: NextAuth.js with email/password and optional OAuth providers
 - **Infrastructure**: AWS (RDS, App Runner, Amplify) managed with Terraform
 - **CI/CD**: GitHub Actions for automated testing and deployment
 
@@ -19,12 +19,12 @@ This project uses a monorepo structure with npm workspaces:
 
 - Node.js 18+
 - Docker and Docker Compose
-- AWS Account (for deployment)
-- GitHub account (for OAuth and CI/CD)
+- AWS Account
 
 ### Local Development
 
 1. **Clone and install dependencies**
+
    ```bash
    git clone <repository-url>
    cd url-shortener
@@ -32,41 +32,57 @@ This project uses a monorepo structure with npm workspaces:
    ```
 
 2. **Set up environment variables**
+
    ```bash
    cp .env.example .env
    # Edit .env with your configuration
    ```
 
-3. **Start local database**
+3. **Complete setup (one command)**
+
    ```bash
-   npm run docker:up
+   npm run setup
    ```
 
-4. **Set up database**
-   ```bash
-   npm run db:generate
-   npm run db:push
-   ```
+   This will:
+   - Start the local PostgreSQL database
+   - Wait for database to be ready
+   - Generate Prisma client
+   - Push database schema
 
-5. **Start development servers**
+4. **Start development servers**
    ```bash
    npm run dev
    ```
 
 This will start:
+
 - API server at http://localhost:4000
 - Web app at http://localhost:3000
 - Database at localhost:5432
 
 ### Available Scripts
 
+**Development:**
+
+- `npm run setup` - Complete project setup (database + schema)
 - `npm run dev` - Start both frontend and backend in development mode
 - `npm run build` - Build all packages
 - `npm run lint` - Lint all packages
 - `npm run type-check` - Type check all packages
+
+**Database:**
+
 - `npm run db:generate` - Generate Prisma client
 - `npm run db:push` - Push schema to database
 - `npm run db:migrate` - Run database migrations
+- `npm run db:studio` - Open Prisma Studio (database GUI)
+- `npm run db:wait` - Wait for database to be ready
+
+**Docker:**
+
+- `npm run docker:up` - Start local database
+- `npm run docker:down` - Stop local database
 
 ## 🏗️ Project Structure
 
@@ -100,7 +116,7 @@ The application supports automatic deployment to AWS with two environments:
 ### CI/CD Pipeline
 
 1. **Pull Request**: Runs tests, linting, and security scans
-2. **Push to develop/main**: 
+2. **Push to develop/main**:
    - Builds and pushes Docker image to ECR
    - Deploys infrastructure with Terraform
    - Runs database migrations
@@ -109,6 +125,7 @@ The application supports automatic deployment to AWS with two environments:
 ### Setup Deployment
 
 1. **Configure GitHub Secrets**
+
    ```
    AWS_ACCESS_KEY_ID
    AWS_SECRET_ACCESS_KEY
@@ -118,6 +135,7 @@ The application supports automatic deployment to AWS with two environments:
    ```
 
 2. **Initialize Terraform**
+
    ```bash
    cd infra
    terraform init
@@ -135,16 +153,28 @@ The application supports automatic deployment to AWS with two environments:
 
 See `.env.example` for all available environment variables.
 
-Key variables:
+**Required variables:**
+
 - `DATABASE_URL`: PostgreSQL connection string
 - `NEXTAUTH_SECRET`: NextAuth.js secret key
-- `GITHUB_CLIENT_ID/SECRET`: GitHub OAuth credentials
-- `AWS_*`: AWS credentials for deployment
+- `NEXTAUTH_URL`: Your app URL (http://localhost:3000 for development)
+
+**Optional variables:**
+
+- `GITHUB_CLIENT_ID/SECRET`: GitHub OAuth credentials (for GitHub login)
+- `GOOGLE_CLIENT_ID/SECRET`: Google OAuth credentials (for Google login)
+- `AWS_*`: AWS credentials (for deployment only)
+
+**Authentication Options:**
+
+- **Email/Password**: Works out of the box, no OAuth setup required
+- **OAuth Providers**: Optional, add GitHub/Google credentials to enable social login
 
 ### Database Schema
 
 The application uses Prisma with the following main models:
-- `User`: User accounts and authentication
+
+- `User`: User accounts and authentication (supports both email/password and OAuth)
 - `Url`: Shortened URLs with analytics
 - `Click`: Click tracking and analytics
 
@@ -169,20 +199,9 @@ The API is built with tRPC, providing end-to-end type safety. Key endpoints:
 
 ## 🔒 Security
 
-- CORS protection
-- Helmet.js security headers
-- Input validation with Zod
-- SQL injection protection with Prisma
-- Automated security scanning in CI/CD
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
+- **Authentication**: Email/password with bcrypt hashing + optional OAuth
+- **CORS protection**: Configured for frontend/backend communication
+- **Security headers**: Helmet.js protection
+- **Input validation**: Zod schema validation on all endpoints
+- **SQL injection protection**: Prisma ORM with parameterized queries
+- **Automated security scanning**: CI/CD pipeline security checks
