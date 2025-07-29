@@ -250,3 +250,40 @@ The current component organization could be improved to better separate concerns
 - Violates separation of concerns principle
 
 **Note:** Current flat structure works fine for small projects, but consider refactoring as the component count grows.
+
+## Database & Development Setup
+
+### 🌱 Configure Prisma Seed Script for Local Development
+
+**Priority: Medium**
+
+The Prisma seed script exists (`packages/db/prisma/seed.ts`) but is not configured to run automatically during development setup.
+
+**Current State:**
+- Seed script creates test user and sample URLs
+- No `"prisma"` configuration in `packages/db/package.json`  
+- Must be run manually with `npx prisma db seed`
+
+**Benefits of Proper Configuration:**
+- Consistent test data for local development
+- Easier onboarding for new developers
+- Automated database population after migrations
+- Better development experience
+
+**Implementation Steps:**
+1. Add `"prisma"` section to `packages/db/package.json`:
+   ```json
+   {
+     "prisma": {
+       "seed": "tsx prisma/seed.ts"
+     }
+   }
+   ```
+2. Update seed script with more comprehensive test data
+3. Document seeding process in development setup
+4. Consider integrating with Docker setup for automated seeding
+
+**Files to Modify:**
+- `packages/db/package.json` - Add prisma seed configuration
+- `packages/db/prisma/seed.ts` - Enhance with more test data (optional)
+- Development documentation - Add seeding instructions
