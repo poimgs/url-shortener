@@ -176,3 +176,77 @@ The codebase has partial URL expiry functionality that needs completion or remov
    - Simplify codebase by removing unused expiry checks
 
 **Recommendation:** Complete implementation for better URL management features.
+
+## Code Organization & Architecture
+
+### 📁 Component Directory Structure
+
+**Priority: Low**
+
+The current component organization could be improved to better separate concerns and follow architectural best practices.
+
+**Current Structure:**
+- `apps/web/src/components/` - Contains both UI components and providers/wrappers
+- Mixed concerns: UI components alongside context providers and authentication logic
+
+**Architectural Considerations:**
+
+1. **Separation of Concerns**
+   - Components should ideally be UI-only (rendering visual elements)
+   - Providers/contexts handle state management and data flow
+   - Authentication logic separate from UI rendering
+
+2. **Current Mixed Concerns:**
+   - `providers.tsx` - Contains provider logic (appropriate for components/ or separate providers/)
+   - `auth-wrapper.tsx` - **Violates Single Responsibility Principle:** 
+     - Handles authentication state/logic AND renders navbar UI
+     - Should be split into separate auth provider + navbar component
+   - `ui/` folder - Pure UI components (follows good practices)
+
+**Improvement Options:**
+
+1. **Strict Separation:**
+   ```
+   src/
+   ├── components/        # UI-only components
+   │   ├── ui/           # Reusable UI primitives
+   │   ├── navbar.tsx    # Pure UI navbar component
+   │   └── layout.tsx    # Layout wrapper component
+   ├── providers/        # Context providers and state management
+   │   ├── auth-provider.tsx
+   │   └── trpc-provider.tsx
+   └── lib/              # Utilities and configurations
+   ```
+
+2. **Hybrid Approach:**
+   ```
+   src/
+   ├── components/       # UI components + layout wrappers
+   │   ├── ui/          # Pure UI components
+   │   ├── layout/      # Layout and wrapper components
+   │   └── forms/       # Form components
+   ├── providers/       # Pure context providers
+   └── lib/             # Utilities
+   ```
+
+**Benefits of Refactoring:**
+- Clear separation between UI and logic
+- Better testability (UI components can be tested independently)
+- Improved maintainability as project grows
+- Follows React architectural best practices
+
+**Files to Consider:**
+- `apps/web/src/components/providers.tsx` - Could move to `src/providers/`
+- `apps/web/src/components/auth-wrapper.tsx` - **Critical refactor needed:**
+  - Split authentication logic into separate auth provider
+  - Extract navbar/header UI into dedicated component (`navbar.tsx`)
+  - Create layout wrapper that composes auth state + navbar UI
+- Create new directory structure as project scales
+
+**Specific Auth-Wrapper Issues:**
+- Currently handles both session management AND navbar rendering
+- Mixes authentication concerns with UI layout responsibilities  
+- Makes testing difficult (can't test navbar UI independently of auth logic)
+- Violates separation of concerns principle
+
+**Note:** Current flat structure works fine for small projects, but consider refactoring as the component count grows.
