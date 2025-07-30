@@ -287,3 +287,69 @@ The Prisma seed script exists (`packages/db/prisma/seed.ts`) but is not configur
 - `packages/db/package.json` - Add prisma seed configuration
 - `packages/db/prisma/seed.ts` - Enhance with more test data (optional)
 - Development documentation - Add seeding instructions
+
+## Testing & Quality Assurance
+
+### 🧪 Add Comprehensive Test Cases
+
+**Priority: High**
+
+The application currently lacks a comprehensive test suite, which is critical for maintaining code quality and preventing regressions as the codebase grows.
+
+**Current State:**
+- No existing test files found in the repository
+- `npm run test` script exists but may not be properly configured
+- No testing framework setup (Jest, Vitest, etc.)
+
+**Required Test Coverage:**
+
+1. **API/Backend Tests (`apps/api/`)**
+   - Unit tests for tRPC procedures (`src/routes/url.ts`)
+   - Integration tests for database operations
+   - Authentication/authorization tests
+   - URL shortening and redirect functionality tests
+   - Error handling and validation tests
+
+2. **Frontend Tests (`apps/web/`)**
+   - Component unit tests (URL form, dashboard, navbar)
+   - Integration tests for user flows
+   - Authentication flow tests
+   - API integration tests
+
+3. **Database Tests (`packages/db/`)**
+   - Prisma schema tests
+   - Seed script tests
+   - Migration tests
+
+4. **End-to-End Tests**
+   - Complete user journey tests (sign up → create URL → redirect)
+   - Cross-browser compatibility tests
+   - Performance tests
+
+**Testing Framework Recommendations:**
+- **Backend**: Jest with Supertest for API testing
+- **Frontend**: Jest + React Testing Library or Vitest + Testing Library
+- **E2E**: Playwright or Cypress
+- **Database**: Jest with test database setup
+
+**Test Infrastructure Needs:**
+- Test database configuration
+- Mock data factories
+- Test utilities and helpers
+- CI/CD integration for automated testing
+
+**Benefits:**
+- Prevent regressions during refactoring
+- Ensure authentication security works correctly
+- Validate URL shortening and analytics accuracy
+- Support safe deployment to production
+- Enable confident code changes and feature additions
+
+**Files to Create:**
+- Test configuration files (`jest.config.js`, `vitest.config.ts`)
+- `apps/api/src/__tests__/` - API test suite
+- `apps/web/src/__tests__/` - Frontend test suite  
+- `packages/db/__tests__/` - Database test suite
+- `tests/e2e/` - End-to-end test suite
+- Test utilities and factories
+- GitHub Actions workflow integration for automated testing
