@@ -11,7 +11,7 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@trpc/server": "^10.34.0",
+    "@trpc/server": "^10.45.3",
     "@url-shortener/db": "*",
     "@url-shortener/types": "*",
     "cors": "^2.8.5",
